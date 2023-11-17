@@ -49,13 +49,15 @@ class CustomizableTrainer(object):
             loss = self.loss_fn(outputs, labels)
 
             if self.with_regularization:
-                regularization = self.network.get_regularization()
+                regularization = self.network.get_regularization(weight_decay=1e-3)
                 loss += regularization
 
             self.optimizer.zero_grad()
             loss.backward()
             self.optimizer.step()
 
+            if len(loss.shape) != 0:
+                print(loss.shape)
             logs["loss"] += loss.item()
             for metric in self.metrics:
                 logs[metric.get_name()] += metric(outputs, labels)

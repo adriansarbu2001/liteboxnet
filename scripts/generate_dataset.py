@@ -42,14 +42,11 @@ def modify_labels(input_root_folder, output_root_folder, split, target_size):
     # in_calib_folder = os.path.join(input_root_folder, "calib")
     out_images_folder = os.path.join(output_root_folder, "image_2")
     out_labels_folder = os.path.join(output_root_folder, "label_2")
-    out_calib_folder = os.path.join(output_root_folder, "calib")
 
     if not os.path.exists(out_images_folder):
         os.makedirs(out_images_folder)
     if not os.path.exists(out_labels_folder):
         os.makedirs(out_labels_folder)
-    if not os.path.exists(out_calib_folder):
-        os.makedirs(out_calib_folder)
 
     progress_bar = tqdm(total=len(input_dataset), desc="Processing Labels", unit="label")
     
@@ -58,10 +55,10 @@ def modify_labels(input_root_folder, output_root_folder, split, target_size):
         calib, image, label, meta = input_dataset[index]
 
         with open(os.path.join(out_labels_folder, meta['label_name']), 'w') as output_file:
-            for i in range (0, len(label)):
+            for i in range(0, len(label)):
                 if label[i]['pos'][2] > 2 and label[i]['truncation'] < 1:
                     cls = label[i]['class']
-                    if cls == "Car" or cls == "Van":
+                    if (cls == "Car" or cls == "Van") and label[i]['occlusion'] <= 1:
                         cls = 1
                     else:
                         cls = -1

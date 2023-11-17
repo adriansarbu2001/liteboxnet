@@ -1,7 +1,9 @@
 import torch
+from torchvision import transforms
 import matplotlib.pyplot as plt
 import numpy as np
 import cv2
+import os
 from torch.utils.data import DataLoader
 
 from liteboxnet.dataset.kitti_dataset import KittiDataset
@@ -12,18 +14,40 @@ from liteboxnet.utils.liteboxnet_utils import plot_liteboxnet_label
 
 
 def test_liteboxnet_dataset():
+    photometric_transforms = transforms.Compose([
+        transforms.ColorJitter(brightness=0.2, contrast=0.2, saturation=0.2, hue=0.2),
+        transforms.ToTensor(),
+        transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
+    ])
+
     dataset = LiteBoxNetDataset(
         base_root="D:/UBB/Inteligenta Computationala Aplicata EN/SEM I/datasets/liteboxnet",
         split="training",
-        label_size=(48, 156)
+        label_size=(48, 156),
+        photometric_transforms=photometric_transforms,
     )
 
-    image, label = dataset[47]
+    # image, label = dataset[47]
+    # image, label = dataset[261]
+    for idx, (image, label) in enumerate(dataset):
+        # image, label = dataset[56]
 
-    image = plot_liteboxnet_label(image=image, label=label, threshold=0.5)
+        image = plot_liteboxnet_label(image=image, label=label, threshold=0.5)
+        confidence = label[0, :, :].cpu().detach().numpy()
 
-    plt.imshow(image)
-    plt.show()
+        fig, axes = plt.subplots(2, 1, figsize=(16, 8))
+        axes[0].imshow(image)
+        axes[0].axis('off')
+        axes[1].imshow(confidence)
+        axes[1].axis('off')
+        plt.tight_layout()
+        # plt.savefig(os.path.join("plot_test", dataset.get_meta(idx)["image_name"]))
+        plt.show()
+
+    # plt.imshow(image)
+    # plt.show()
+    # plt.imshow(label[0, 0, :, :].cpu().detach().numpy())
+    # plt.show()
 
 
 def test_kitti_dataset():
@@ -32,7 +56,7 @@ def test_kitti_dataset():
         split="training"
     )
 
-    calib, image, label, meta = dataset[47]
+    calib, image, label, meta = dataset[8]
 
     image = plot_base_3d(image=image, label=label, P=calib, style="ground_truth")
 
@@ -79,10 +103,15 @@ def test_inference(network, device_id=-1):
     model = LiteBoxNet(backbone_pretrained=True).to(device)
     model.load_state_dict(torch.load(f"networks/{network}", map_location=device))
     model.eval()
-    image, _ = dataset[37]
+    image, _ = dataset[1]
     output = model(image.unsqueeze(0).float().to(device))
-    image = plot_liteboxnet_label(image, output[0], threshold=0.5)
-    plt.imshow(image)
-    plt.show()
-    plt.imshow(output[0, 0, :, :].cpu().detach().numpy())
+    image = plot_liteboxnet_label(image, output[0], threshold=0.05)
+    confidence = output[0, 0, :, :].cpu().detach().numpy()
+
+    fig, axes = plt.subplots(2, 1, figsize=(16, 8))
+    axes[0].imshow(image)
+    axes[0].axis('off')
+    axes[1].imshow(confidence)
+    axes[1].axis('off')
+    plt.tight_layout()
     plt.show()

@@ -10,7 +10,10 @@ class TP(Metric):
     def __call__(self, outputs: torch.Tensor, labels: torch.Tensor) -> float:
         re_confidence = outputs[:, 0, :, :]
         gt_confidence = labels[:, 0, :, :]
-        tp = torch.logical_and(re_confidence.gt(self.threshold), gt_confidence.eq(1.0)).sum()
+        mask_above_0 = gt_confidence.ge(0).bool()
+        re_confidence = re_confidence[mask_above_0]
+        gt_confidence = gt_confidence[mask_above_0]
+        tp = torch.logical_and(re_confidence.gt(self.threshold), gt_confidence.eq(1.0)).float().sum()
         return tp.item()
     
     def get_name(self) -> str:
@@ -25,7 +28,10 @@ class FP(Metric):
     def __call__(self, outputs: torch.Tensor, labels: torch.Tensor) -> float:
         re_confidence = outputs[:, 0, :, :]
         gt_confidence = labels[:, 0, :, :]
-        fp = torch.logical_and(re_confidence.gt(self.threshold), gt_confidence.eq(0.0)).sum()
+        mask_above_0 = gt_confidence.ge(0).bool()
+        re_confidence = re_confidence[mask_above_0]
+        gt_confidence = gt_confidence[mask_above_0]
+        fp = torch.logical_and(re_confidence.gt(self.threshold), gt_confidence.eq(0.0)).float().sum()
         return fp.item()
 
     def get_name(self) -> str:
@@ -40,7 +46,10 @@ class FN(Metric):
     def __call__(self, outputs: torch.Tensor, labels: torch.Tensor) -> float:
         re_confidence = outputs[:, 0, :, :]
         gt_confidence = labels[:, 0, :, :]
-        fn = torch.logical_and(re_confidence.le(self.threshold), gt_confidence.eq(1.0)).sum()
+        mask_above_0 = gt_confidence.ge(0).bool()
+        re_confidence = re_confidence[mask_above_0]
+        gt_confidence = gt_confidence[mask_above_0]
+        fn = torch.logical_and(re_confidence.le(self.threshold), gt_confidence.eq(1.0)).float().sum()
         return fn.item()
 
     def get_name(self) -> str:
@@ -97,7 +106,10 @@ class F1Score(Metric):
         tp = self.tp(outputs, labels)
         fp = self.fp(outputs, labels)
         fn = self.fn(outputs, labels)
-        return tp / (tp + 0.5 * (fp + fn))
+        if tp + 0.5 * (fp + fn) == 0:
+            return 1.0
+        else:
+            return tp / (tp + 0.5 * (fp + fn))
 
     def get_name(self) -> str:
         return "F1 score"

@@ -1,5 +1,6 @@
 import torch
 from torch.backends import cudnn
+from torchvision import transforms
 from typing import List
 
 from liteboxnet.dataset import get_dataloader
@@ -10,7 +11,7 @@ from liteboxnet.network_tools.validator import CustomizableValidator
 from liteboxnet.utils import Callback, Metric
 from liteboxnet.utils.callbacks import PrintLearningRate, PrintLogs, ReduceLearningRate, SaveNetwork, PlotTrainLoss, \
     PrintElapsedTime, EarlyStopping, PlotTrainAndValidLoss
-from liteboxnet.utils.metrics import Precision, Recall, F1Score
+from liteboxnet.utils.metrics import Precision, Recall, F1Score, TP, FP, FN
 
 
 def setup(seed):
@@ -30,12 +31,19 @@ def customizable_training(batch_size, valid_batch_size, learning_rate, max_epoch
     networks_folder = "networks"
     network_name = "network"
 
+    photometric_transforms = transforms.Compose([
+        # transforms.ColorJitter(brightness=0.2, contrast=0.2, saturation=0.2, hue=0.2),
+        transforms.ToTensor(),
+        transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
+    ])
+
     # Dataset
     train_dataloader = get_dataloader(
         base_root=dataset_base_root,
         split="training",
         batch_size=batch_size,
-        label_size=label_size
+        label_size=label_size,
+        photometric_transforms=photometric_transforms
     )
     valid_dataloader = None
     if with_validation:
@@ -43,11 +51,12 @@ def customizable_training(batch_size, valid_batch_size, learning_rate, max_epoch
             base_root=dataset_base_root,
             split="validating",
             batch_size=valid_batch_size,
-            label_size=label_size
+            label_size=label_size,
+            photometric_transforms=photometric_transforms
         )
 
     # Loss and optimizer
-    loss_function = LiteBoxNetLoss(conf_w=1, pos_w=1, len_w=1, trig_w=1, const_w=4)
+    loss_function = LiteBoxNetLoss(conf_w=2, pos_w=1, len_w=16, trig_w=16, const_w=4)
     optimizer = torch.optim.Adam(network.parameters(), lr=learning_rate)
 
     # Callbacks and Metrics
@@ -56,12 +65,15 @@ def customizable_training(batch_size, valid_batch_size, learning_rate, max_epoch
         PrintLogs(),
         ReduceLearningRate(optimizer=optimizer, patience=15, factor=5e-1),
         SaveNetwork(network=network, networks_folder=networks_folder, network_name=network_name),
-        PlotTrainAndValidLoss(f"plots/{network_name}_loss_evolution.png", start_epoch=1, upper_loss=1.0),
+        PlotTrainAndValidLoss(f"plots/{network_name}_loss_evolution.png", start_epoch=1, upper_loss=20.0),
         PrintElapsedTime(),
         EarlyStopping(patience=45),
     ]
     threshold = 0.5
     metrics: List[Metric] = [
+        TP(threshold=threshold),
+        FP(threshold=threshold),
+        FN(threshold=threshold),
         Precision(threshold=threshold),
         Recall(threshold=threshold),
         F1Score(threshold=threshold),

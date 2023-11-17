@@ -20,7 +20,7 @@ def process_images(input_folder, output_folder):
 
     image_files = [filename for filename in os.listdir(input_folder) if filename.endswith((".jpg", ".png"))]
 
-    progress_bar = tqdm(total=len(image_files), desc="Processing Images", unit="image")
+    progress_bar = tqdm(total=len(image_files), desc="Processing Calibs", unit="calibs")
 
     for filename in image_files:
         output_path = os.path.join(output_folder, f"{os.path.splitext(filename)[0]}.txt")  # Create corresponding .txt file
@@ -33,6 +33,6 @@ def process_images(input_folder, output_folder):
     progress_bar.close()
 
 # Example usage
-input_folder_path = "D:/UBB/Inteligenta Computationala Aplicata EN/SEM I/EIAMCS/liteboxnet/datasets/kitti/testing/image_2"
-output_folder_path = "D:/UBB/Inteligenta Computationala Aplicata EN/SEM I/EIAMCS/liteboxnet/datasets/kitti_modified/testing/calib"
+input_folder_path = "D:/UBB/Inteligenta Computationala Aplicata EN/SEM I/datasets/kitti/training/image_2"
+output_folder_path = "D:/UBB/Inteligenta Computationala Aplicata EN/SEM I/datasets/kitti_modified/training/calib"
 process_images(input_folder_path, output_folder_path)

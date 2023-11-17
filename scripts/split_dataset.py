@@ -1,6 +1,7 @@
 import os
 import shutil
 import random
+random.seed(1234)
 
 
 def split_data(source_folder, destination_folder, split_ratio):

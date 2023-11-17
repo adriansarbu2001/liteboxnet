@@ -18,22 +18,37 @@ class Decoder(nn.Module):
     def __init__(self, in_channels, out_channels):
         super(Decoder, self).__init__()
         self.upsample1 = nn.ConvTranspose2d(in_channels, in_channels // 2, kernel_size=4, stride=2, padding=1)
+        self.bn1 = nn.BatchNorm2d(in_channels // 2)
+        self.relu1 = nn.ReLU()
         self.conv1 = nn.Conv2d(in_channels // 2, in_channels // 2, kernel_size=3, stride=1, padding=1)
+        self.bn2 = nn.BatchNorm2d(in_channels // 2)
+        self.relu2 = nn.ReLU()
         self.upsample2 = nn.ConvTranspose2d(in_channels // 2, out_channels, kernel_size=4, stride=2, padding=1)
+        self.bn3 = nn.BatchNorm2d(out_channels)
+        self.relu3 = nn.ReLU()
         self.conv2 = nn.Conv2d(out_channels, out_channels, kernel_size=3, stride=1, padding=1)
+        self.bn4 = nn.BatchNorm2d(out_channels)
+        self.relu4 = nn.ReLU()
 
     def forward(self, x):
         x = self.upsample1(x)
+        x = self.bn1(x)
+        x = self.relu1(x)
         x = self.conv1(x)
+        x = self.bn2(x)
+        x = self.relu2(x)
         x = self.upsample2(x)
+        x = self.bn3(x)
+        x = self.relu3(x)
         x = self.conv2(x)
+        x = self.bn4(x)
+        x = self.relu4(x)
         return x
 
 
 class RPNHead(nn.Module):
     def __init__(self, in_channels):
         super(RPNHead, self).__init__()
-        # conf, x, y, l1, sin1, cos1, l2, sin2, cos2, height
         self.confidence = nn.Conv2d(in_channels, 1, kernel_size=3, padding=1)
         self.lengths = nn.Conv2d(in_channels, 5, kernel_size=3, padding=1)
         self.trig = nn.Conv2d(in_channels, 4, kernel_size=3, padding=1)
@@ -71,4 +86,11 @@ class LiteBoxNet(nn.Module):
         # print(fpn_features.shape)
         output = self.rpn_head(fpn_features)
         # print(regression.shape)
-        return output
+        return output  # conf, x, y, l1, sin1, cos1, l2, sin2, cos2, height
+
+    def get_regularization(self, weight_decay=1e-4):
+        regularization = 0.0
+        for param in self.parameters():
+            if param.requires_grad:
+                regularization += 0.5 * weight_decay * torch.sum(param**2)
+        return regularization
