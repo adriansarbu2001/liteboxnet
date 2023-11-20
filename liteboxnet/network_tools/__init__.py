@@ -4,13 +4,14 @@ from torchvision import transforms
 from typing import List
 
 from liteboxnet.dataset import get_dataloader
+from liteboxnet.network.attention_modules import PAM, CAM, DAM
 from liteboxnet.network.liteboxnet import LiteBoxNet
 from liteboxnet.network_tools.loss import LiteBoxNetLoss
 from liteboxnet.network_tools.trainer import CustomizableTrainer
 from liteboxnet.network_tools.validator import CustomizableValidator
 from liteboxnet.utils import Callback, Metric
-from liteboxnet.utils.callbacks import PrintLearningRate, PrintLogs, ReduceLearningRate, SaveNetwork, PlotTrainLoss, \
-    PrintElapsedTime, EarlyStopping, PlotTrainAndValidLoss
+from liteboxnet.utils.callbacks import PrintLearningRate, PrintLogs, ReduceLearningRate, SaveNetwork, EarlyStopping, \
+    PrintElapsedTime, PlotTrainAndValidLoss
 from liteboxnet.utils.metrics import Precision, Recall, F1Score, TP, FP, FN
 
 
@@ -27,7 +28,7 @@ def customizable_training(batch_size, valid_batch_size, learning_rate, max_epoch
     device = torch.device('cpu' if device_id < 0 else 'cuda:%d' % device_id)
 
     # Network
-    network = LiteBoxNet(backbone_pretrained=True)
+    network = LiteBoxNet(backbone_pretrained=True, am=[PAM, CAM, DAM])
     networks_folder = "networks"
     network_name = "network"
 
@@ -56,7 +57,7 @@ def customizable_training(batch_size, valid_batch_size, learning_rate, max_epoch
         )
 
     # Loss and optimizer
-    loss_function = LiteBoxNetLoss(conf_w=2, pos_w=1, len_w=16, trig_w=16, const_w=4)
+    loss_function = LiteBoxNetLoss(conf_w=4, pos_w=1, len_w=4, trig_w=4, const_w=4)
     optimizer = torch.optim.Adam(network.parameters(), lr=learning_rate)
 
     # Callbacks and Metrics

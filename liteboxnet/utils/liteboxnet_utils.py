@@ -91,7 +91,7 @@ def dict_list_to_label(det_dict_list, image_size, label_size, vehicle_confidence
         kernel_y_range = (max(0, kernel_size[0] // 2 - y_label), min(kernel_size[0], label_size[0] - y_label + kernel_size[0] // 2))
         kernel_x_range = (max(0, kernel_size[1] // 2 - x_label), min(kernel_size[1], label_size[1] - x_label + kernel_size[1] // 2))
 
-        if det_dict["class"] >= 0 and det_dict["height"] >= 40:
+        if det_dict["class"] >= 0 and det_dict["height"] >= 30:
             label[
                 0,
                 label_y_range[0]:label_y_range[1],

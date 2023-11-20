@@ -74,8 +74,7 @@ def modify_labels(input_root_folder, output_root_folder, split, target_size):
                     x6, y6 = ((coords[6, 0] + coords[7, 0]) / 2), ((coords[6, 1] + coords[7, 1]) / 2)
                     x7, y7 = ((coords[4, 0] + coords[7, 0]) / 2), ((coords[4, 1] + coords[7, 1]) / 2)
                     x8, y8 = ((coords[5, 0] + coords[6, 0]) / 2), ((coords[5, 1] + coords[6, 1]) / 2)
-                    # x_intersection = ((x1 * y2 - y1 * x2) * (x3 - x4) - (x1 - x2) * (x3 * y4 - y3 * x4)) / ((x1 - x2) * (y3 - y4) - (y1 - y2) * (x3 - x4))
-                    # y_intersection = ((x1 * y2 - y1 * x2) * (y3 - y4) - (y1 - y2) * (x3 * y4 - y3 * x4)) / ((x1 - x2) * (y3 - y4) - (y1 - y2) * (x3 - x4))
+
                     x_intersection = x4 + (x3 - x4) / 2 if x4 < x3 else x3 + (x4 - x3) / 2
                     y_intersection = y4 + (y3 - y4) / 2 if y4 < y3 else y3 + (y4 - y3) / 2
                     l1 = math.sqrt((x2 - x1)**2 + (y2 - y1)**2)
