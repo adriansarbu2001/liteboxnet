@@ -15,14 +15,14 @@ if __name__ == "__main__":
 
     # label_size = (88, 304)
     # label_size = (48, 156)
-    # label_size = (44, 152)
-    # customizable_training(
-    #     batch_size=32,
-    #     valid_batch_size=32,
-    #     learning_rate=1e-4,
-    #     max_epochs=10000,
-    #     dataset_base_root="D:/UBB/Inteligenta Computationala Aplicata EN/SEM I/datasets/liteboxnet",
-    #     label_size=label_size,
-    #     with_validation=True,
-    #     device_id=0
-    # )
+    label_size = (44, 152)
+    customizable_training(
+        batch_size=32,
+        valid_batch_size=32,
+        learning_rate=1e-4,
+        max_epochs=10000,
+        dataset_base_root="D:/UBB/Inteligenta Computationala Aplicata EN/SEM I/datasets/liteboxnet",
+        label_size=label_size,
+        with_validation=True,
+        device_id=0
+    )

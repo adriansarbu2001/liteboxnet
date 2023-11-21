@@ -78,11 +78,15 @@ class LiteBoxNet(nn.Module):
         self.rpn_head = RPNHead(channels_list[-1])
 
     def freeze_backbone(self):
-        for param in self.backbone.parameters():
+        for param in self.downsample_blocks.parameters():
+            param.requires_grad = False
+        for param in self.conv_down.parameters():
             param.requires_grad = False
 
     def unfreeze_backbone(self):
-        for param in self.backbone.parameters():
+        for param in self.downsample_blocks.parameters():
+            param.requires_grad = True
+        for param in self.conv_down.parameters():
             param.requires_grad = True
 
     def forward(self, x):  # 1 x 3 x 352 x 1216

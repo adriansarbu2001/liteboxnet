@@ -64,8 +64,8 @@ def modify_labels(input_root_folder, output_root_folder, split, target_size):
                         cls = -1
                     coords, _, _ = get_coords_3d(label[i], calib)
                     coords = np.transpose(coords)
-                    coords[:,0] *= (target_size[0] / image.shape[1])
-                    coords[:,1] *= (target_size[1] / image.shape[0])
+                    coords[:, 0] *= (target_size[0] / image.shape[1])
+                    coords[:, 1] *= (target_size[1] / image.shape[0])
                     x1, y1 = ((coords[0, 0] + coords[1, 0]) / 2), ((coords[0, 1] + coords[1, 1]) / 2)
                     x2, y2 = ((coords[2, 0] + coords[3, 0]) / 2), ((coords[2, 1] + coords[3, 1]) / 2)
                     x3, y3 = ((coords[0, 0] + coords[3, 0]) / 2), ((coords[0, 1] + coords[3, 1]) / 2)
@@ -100,4 +100,6 @@ if __name__ == '__main__':
     out_root_folder = 'D:/UBB/Inteligenta Computationala Aplicata EN/SEM I/datasets/liteboxnet'
 
     # resize_images(input_image_folder, output_image_folder, target_size=(1224, 370))
-    modify_labels(in_root_folder, out_root_folder, "training", target_size=(1224, 370))
+    # modify_labels(in_root_folder, out_root_folder, "training", target_size=(1224, 370))
+    resize_images(input_image_folder, output_image_folder, target_size=(1216, 352))
+    modify_labels(in_root_folder, out_root_folder, "training", target_size=(1216, 352))
