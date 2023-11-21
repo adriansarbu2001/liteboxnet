@@ -108,7 +108,7 @@ class LiteBoxNet(nn.Module):
         output = self.rpn_head(x)  # 1 x 10 x 44 x 152
         return output  # conf, x, y, l1, sin1, cos1, l2, sin2, cos2, height
 
-    def get_regularization(self, weight_decay=1e-4):
+    def get_regularization(self, weight_decay=1e-2):
         regularization = 0.0
         for param in self.parameters():
             if param.requires_grad:

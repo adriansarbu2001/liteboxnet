@@ -49,7 +49,7 @@ class CustomizableTrainer(object):
             loss = self.loss_fn(outputs, labels)
 
             if self.with_regularization:
-                regularization = self.network.get_regularization(weight_decay=1e-3)
+                regularization = self.network.get_regularization(weight_decay=1e-2)
                 loss += regularization
 
             self.optimizer.zero_grad()

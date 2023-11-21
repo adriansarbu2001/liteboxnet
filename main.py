@@ -1,8 +1,8 @@
 import torch
 
 from liteboxnet.network_tools import customizable_training
-from liteboxnet.utils.testing_functions import test_liteboxnet_dataset, test_kitti_dataset, test_liteboxnet_dataloader, \
-    test_network_output_shape, test_inference
+from liteboxnet.utils.testing_functions import test_liteboxnet_dataset, test_kitti_dataset, \
+    test_network_output_shape, test_liteboxnet_dataloader, test_inference
 
 if __name__ == "__main__":
     print("Cuda available:", torch.cuda.is_available())
@@ -10,7 +10,7 @@ if __name__ == "__main__":
     # test_liteboxnet_dataset()
     # test_liteboxnet_dataloader()
     # test_kitti_dataset()
-    test_network_output_shape(device_id=0)
+    # test_network_output_shape(device_id=0)
     # test_inference(network="network.pkl", threshold=0.25, device_id=0)
 
     # label_size = (88, 304)
