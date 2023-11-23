@@ -88,7 +88,7 @@ def customizable_training(batch_size, valid_batch_size, learning_rate, max_epoch
         optimizer=optimizer,
         train_dataloader=train_dataloader,
         metrics=metrics,
-        with_regularization=False,
+        with_regularization=True,
         frozen_backbone=True,
         show_progress=True
     )
@@ -100,7 +100,7 @@ def customizable_training(batch_size, valid_batch_size, learning_rate, max_epoch
             loss_function=loss_function,
             valid_dataloader=valid_dataloader,
             metrics=metrics,
-            with_regularization=False,
+            with_regularization=True,
             show_progress=True
         )
 

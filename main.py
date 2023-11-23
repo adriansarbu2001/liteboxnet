@@ -11,7 +11,7 @@ if __name__ == "__main__":
     # test_liteboxnet_dataloader()
     # test_kitti_dataset()
     # test_network_output_shape(device_id=0)
-    # test_inference(network="network.pkl", threshold=0.25, device_id=0)
+    # test_inference(network="network.pkl", threshold=0.5, device_id=0)
 
     # label_size = (88, 304)
     # label_size = (48, 156)
